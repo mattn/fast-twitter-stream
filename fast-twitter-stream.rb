@@ -8,7 +8,7 @@ require 'pit'
 set :server, 'mongrel'
 set :public, File.dirname(__FILE__) + '/static'
 
-config = Pit.get("twitter.com", :require => {
+CONFIG = Pit.get("twitter.com", :require => {
 	"username" => "your username in twitter",
 	"password" => "your password in twitter"
 })
@@ -53,7 +53,7 @@ class MultipartResponse
   end
 
   def each
-    TweetStream::Client.new(config[:username], config[:password]).sample do |status|  
+    TweetStream::Client.new(CONFIG[:username], CONFIG[:password]).sample do |status|  
       yield "--#{@boundary}\nContent-Type: #{@content_type}\n(#{status.to_json})"
     end  
   end
