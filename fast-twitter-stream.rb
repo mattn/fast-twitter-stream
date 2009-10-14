@@ -10,8 +10,13 @@ set :public, File.dirname(__FILE__) + '/static'
 
 get '/' do
   <<HTML
-  <html> <head>
+  <html>
+  <head>
     <title>Server Push</title>
+    <style type="text/css">
+    #content { font-family: monospace }
+    .tweets { background-color: #eee }
+    </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="/js/DUI.js"></script>
     <script type="text/javascript" src="/js/Stream.js"></script>
@@ -20,11 +25,18 @@ get '/' do
       var s = new DUI.Stream();
       s.listen('text/javascript', function(payload) {
         var status = eval(payload);
-        $('#content').append('<p>' + status.text + '</p>');
+        $('<div/>')
+          .attr('class', 'tweets')
+          .css('display', 'none')
+          .append($('<a/>').attr('href', '#' + status.id))
+          .append($('<b/>').text(status.user.screen_name))
+          .append($('<p/>').text(status.text))
+          .appendTo('#content').show('fast');
+        location.href = '#' + status.id;
       });
       s.load('/push');
-	});
-	</script>
+    });
+    </script>
   </head>
   <body>
     <h1>Server Push</h1>
@@ -46,8 +58,8 @@ class MultipartResponse
     @boundary = boundary
     @content_type = content_type
     @config = Pit.get("twitter.com", :require => {
-	    "username" => "your username in twitter",
-	    "password" => "your password in twitter"
+      "username" => "your username in twitter",
+      "password" => "your password in twitter"
     })
 
   end
